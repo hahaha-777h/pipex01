@@ -6,18 +6,18 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:08:50 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/11 19:35:48 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/18 15:13:27 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
+// /bin, /usr/binのように入っていて、最後のスラッシュがないのに注意
 char	**get_path(char **envp)
 {
 	char	*path;
 	char	**split_path;
 	int		path_row;
-	int		path_i;
 
 	path_row = 0;
 	if (envp == NULL)
@@ -37,9 +37,9 @@ char	**get_path(char **envp)
 }
 
 // TODO
-static void	free_mem(char ***cmds)
-{
-}
+// static void	free_mem(char ***cmds)
+// {
+// }
 
 char	***get_cmds(int ac, char *av[], t_pipex *pipex)
 {
@@ -61,7 +61,7 @@ char	***get_cmds(int ac, char *av[], t_pipex *pipex)
 		if (cmds[cmd_i] == NULL)
 		{
 			printf("split failed\n");
-			free_mem(cmds);
+			// free_mem(cmds);
 			return (NULL);
 		}
 		cmd_i++;

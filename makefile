@@ -6,7 +6,7 @@
 #    By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/04 15:44:57 by hhikita           #+#    #+#              #
-#    Updated: 2025/03/11 19:12:50 by hhikita          ###   ########.fr        #
+#    Updated: 2025/03/18 14:26:43 by hhikita          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,10 @@ CFLAGS = -Wall -Wextra -Werror
 NAME	= pipex
 
 
-SRCS = src/main.c	src/utils/str_utils.c		src/utils/split.c		src/init.c  \
-		gnl/gnl.c	gnl/gnl_utils.c
+SRCS = src/main.c	src/str_utils.c		src/init.c  src/env_and_args.c \
+		src/execute.c gnl/gnl.c	gnl/gnl_utils.c
+
+LIBFT = libft/libft.a
 
 OBJ_DIR = ./obj
 OBJS    = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
@@ -29,10 +31,11 @@ $(OBJ_DIR)/%.o:	src/%.c
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	make -C libft
+$(NAME): $(OBJS) $(LIBFT)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT)
 
+$(LIBFT):
+	make -C libft
 
 clean:
 	rm -rf $(OBJ_DIR) 

@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:14:49 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/11 19:35:39 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/18 14:07:15 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,20 @@
 // 	while (*path)
 // 	{
 // 		printf("%s\n", *path++);
+// 	}
+// 	return (0);
+// }
+
+// check execve()'s behavior
+// #include "pipex.h"
+
+// int	main(void)
+// {
+// 	char *cmd[3] = {"/bin/ls", "-l", NULL};
+// 	if (execve("/bin/ls", cmd, NULL) == -1)
+// 	{
+// 		printf("exec failed\n");
+// 		return (1);
 // 	}
 // 	return (0);
 // }

@@ -6,11 +6,13 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 09:54:19 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/11 10:28:51 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/18 10:38:10 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
+
+/* mallocした変数はすべてt_pipex *pipexに入っている*/
 
 void	cleanup(t_pipex *pipex)
 {

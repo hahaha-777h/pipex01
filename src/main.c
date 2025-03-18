@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/11 19:37:20 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/18 17:25:28 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	handle_here_doc(int ac, char *av[], t_pipex *pipex)
 	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
 }
 
-static void	validate_args(int ac, char *av[], t_pipex *pipex)
+static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
 {
 	if (ac < 5)
 	{
@@ -65,12 +65,47 @@ static void	validate_args(int ac, char *av[], t_pipex *pipex)
 // 		return (0);
 // }
 
+/* mallocした変数はすべて構造体に入れて、cleanup()しやすくする　*/
+
+// static void	print_pipex_info(t_pipex *pipex)
+// {
+// 	if (!pipex)
+// 		return ;
+// 	printf("in_fd: %d\n", pipex->in_fd);
+// 	printf("out_fd: %d\n", pipex->out_fd);
+// 	printf("here_doc: %s\n", pipex->here_doc ? "true" : "false");
+// 	printf("is_valid_arg: %s\n", pipex->is_valid_arg ? "true" : "false");
+// 	printf("is_envp: %s\n", pipex->is_envp ? "true" : "false");
+// 	printf("cmd_count: %d\n", pipex->cmd_count);
+// 	if (pipex->cmd_paths)
+// 	{
+// 		printf("cmd_paths:\n");
+// 		for (int i = 0; pipex->cmd_paths[i] != NULL; i++)
+// 		{
+// 			printf("  cmd_paths[%d]: %s\n", i, pipex->cmd_paths[i]);
+// 		}
+// 	}
+// 	if (pipex->cmd_args)
+// 	{
+// 		printf("cmd_args:\n");
+// 		for (int i = 0; i < pipex->cmd_count; i++)
+// 		{
+// 			printf("  cmd_args[%d]:\n", i);
+// 			for (int j = 0; pipex->cmd_args[i][j] != NULL; j++)
+// 			{
+// 				printf("    cmd_args[%d][%d]: %s\n", i, j,
+// 					pipex->cmd_args[i][j]);
+// 			}
+// 		}
+// 	}
+// }
+
 int	main(int ac, char *av[], char *envp[])
 {
 	t_pipex	pipex;
 
-	init_pipex(&pipex);
-	validate_args(ac, av, &pipex);
+	init_pipex(ac, &pipex);
+	validate_args_and_open_file(ac, av, &pipex);
 	if (errno != 0)
 		perror(NULL);
 	if (pipex.out_fd == -1)
@@ -85,6 +120,9 @@ int	main(int ac, char *av[], char *envp[])
 	pipex.cmd_args = get_cmds(ac, av, &pipex);
 	if (pipex.cmd_args == NULL)
 		return (4);
-	// execute_cmds(ac, av, pipex);
+	// debug
+	// print_pipex_info(&pipex);
+	execute_cmds(ac, av, &pipex); // TODO
+	// cleanup();   // TODO
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:37:45 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/11 12:58:52 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/18 15:28:29 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_pipex
 
 // init
 
-void		init_pipex(t_pipex *pipex);
+void		init_pipex(int ac, t_pipex *pipex);
 // str_utils
 
 void		putstr_fd(const char *s, int fd);
@@ -56,4 +56,8 @@ char		**ft_split(char const *s, char c);
 
 char		**get_path(char **envp);
 char		***get_cmds(int ac, char *av[], t_pipex *pipex);
+
+// exec
+
+int			execute_cmds(int ac, char *av[], t_pipex *pipex);
 #endif
