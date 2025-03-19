@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/19 18:16:58 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/19 18:59:04 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 // static void	close_all_pipes(int **pipefd)
 // {
 // }
+
+//２つしかパイプがなかったらうまく動かないからコマンドの分用意するべき　
 
 int	execute_cmds(int ac, char *av[], t_pipex *pipex)
 {
