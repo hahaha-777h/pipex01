@@ -6,13 +6,33 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:08:50 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/18 15:13:27 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/19 10:41:11 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-// /bin, /usr/binのように入っていて、最後のスラッシュがないのに注意
+static char	**add_slash(char **split_path)
+{
+	int		path_i;
+	char	*path_with_slash;
+
+	path_i = 0;
+	while (split_path[path_i])
+	{
+		path_with_slash = ft_strjoin(split_path[path_i], "/");
+		if (path_with_slash == NULL)
+		{
+			printf("strjoin failed at get_paths\n");
+			return (NULL);
+		}
+		free(split_path[path_i]);
+		split_path[path_i] = path_with_slash;
+		path_i++;
+	}
+	return (split_path);
+}
+
 char	**get_path(char **envp)
 {
 	char	*path;
@@ -33,6 +53,7 @@ char	**get_path(char **envp)
 	path = ft_substr(envp[path_row], 5, ft_strlen(envp[path_row]) - 5);
 	split_path = ft_split(path, ':');
 	free(path);
+	add_slash(split_path);
 	return (split_path);
 }
 

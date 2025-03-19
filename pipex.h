@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:37:45 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/18 15:28:29 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/19 18:16:29 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <stdio.h>  //perror
 # include <stdlib.h> //malloc free
 # include <string.h>
+# include <sys/wait.h>
 # include <unistd.h>
 
 typedef struct s_pipex
