@@ -6,7 +6,7 @@
 #    By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/04 15:44:57 by hhikita           #+#    #+#              #
-#    Updated: 2025/03/18 14:26:43 by hhikita          ###   ########.fr        #
+#    Updated: 2025/03/20 16:53:01 by hhikita          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,8 @@ NAME	= pipex
 
 
 SRCS = src/main.c	src/str_utils.c		src/init.c  src/env_and_args.c \
-		src/execute.c gnl/gnl.c	gnl/gnl_utils.c
+		src/execute.c gnl/gnl.c	gnl/gnl_utils.c	src/close_and_dup.c	src/cleanup.c \
+		
 
 LIBFT = libft/libft.a
 

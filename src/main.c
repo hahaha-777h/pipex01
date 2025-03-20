@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/19 15:48:54 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/20 15:31:48 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	main(int ac, char *av[], char *envp[])
 	pipex.cmd_args = get_cmds(ac, av, &pipex);
 	if (pipex.cmd_args == NULL)
 		return (4);
-	execute_cmds(ac, av, &pipex); // TODO
+	execute_cmds(&pipex); // TODO
 	// cleanup();   // TODO
 	return (0);
 }

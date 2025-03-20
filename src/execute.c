@@ -6,27 +6,25 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/19 18:59:04 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/20 16:52:13 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-static int	**allocate_pipes(int ac, char *av[])
+static int	**allocate_pipes(t_pipex *pipex)
 {
 	int	**pipefd;
 	int	pipe_count;
 
-	(void)ac;
-	(void)av;
-	pipefd = (int **)malloc(2 * sizeof(int *));
+	pipefd = (int **)malloc((pipex->cmd_count - 1) * sizeof(int *));
 	if (pipefd == NULL)
 	{
 		printf("malloc1 failed at allocate_pipes\n");
 		return (NULL);
 	}
 	pipe_count = 0;
-	while (pipe_count < 2)
+	while (pipe_count < pipex->cmd_count - 1)
 	{
 		pipefd[pipe_count] = (int *)malloc(2 * sizeof(int));
 		if (pipefd[pipe_count] == NULL)
@@ -41,16 +39,6 @@ static int	**allocate_pipes(int ac, char *av[])
 	}
 	return (pipefd);
 }
-
-// static void	close_remaining_pipes(int **pipefd, int cmds_i)
-// {
-// 	int	pipe_i;
-
-// 	pipe_i = 0;
-// 	while (pipe_i < cmds_i)
-// 	{
-// 	}
-// }
 
 static int	find_and_exec(t_pipex *pipex, int cmds_i)
 {
@@ -75,75 +63,51 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 	return (127);
 }
 
-// TODO
-// static void	close_all_pipes(int **pipefd)
-// {
-// }
+static int	close_dup_exec(t_pipex *pipex, int **pipefd, int cmds_i)
+{
+	if (cmds_i == 0)
+		close_and_dup_first(pipex, pipefd);
+	else if (cmds_i == pipex->cmd_count - 1)
+		close_and_dup_last(pipex, pipefd, cmds_i);
+	else
+		close_and_dup_middle(pipex, pipefd, cmds_i);
+	find_and_exec(pipex, cmds_i);
+	return (127);
+}
 
-//２つしかパイプがなかったらうまく動かないからコマンドの分用意するべき　
+static void	close_at_parent(int **pipefd, int cmds_i)
+{
+	if (cmds_i != 0)
+	{
+		close(pipefd[cmds_i - 1][0]);
+		close(pipefd[cmds_i - 1][1]);
+	}
+}
 
-int	execute_cmds(int ac, char *av[], t_pipex *pipex)
+int	execute_cmds(t_pipex *pipex)
 {
 	int	pid;
 	int	**pipefd;
 	int	cmds_i;
 
-	pipefd = allocate_pipes(ac, av);
+	pipefd = allocate_pipes(pipex);
 	if (pipefd == NULL)
-	{
-		printf("Failed to allocate pipes\n");
 		return (5);
-	}
 	cmds_i = 0;
-	if (pipe(pipefd[0]) == -1)
-		return (9);
-	if (pipe(pipefd[1]) == -1)
-		return (10);
 	while (pipex->cmd_args[cmds_i] != NULL)
 	{
+		if (pipex->cmd_args[cmds_i + 1] != NULL)
+			pipe(pipefd[cmds_i]);
 		pid = fork();
 		if (pid < 0)
 			return (11);
 		if (pid == 0)
-		{
-			// dup2, close, pipefdを使ったpipeの管理わけわからん
-			if (cmds_i == 0)
-			{
-				dup2(pipex->in_fd, STDIN_FILENO);
-				dup2(pipefd[0][1], STDOUT_FILENO);
-			}
-			else if (cmds_i == pipex->cmd_count - 1)
-			{
-				dup2(pipefd[(cmds_i - 1) % 2][0], STDIN_FILENO);
-				dup2(pipex->out_fd, STDOUT_FILENO);
-			}
-			else
-			{
-				dup2(pipefd[(cmds_i - 1) % 2][0], STDIN_FILENO);
-				dup2(pipefd[cmds_i % 2][1], STDOUT_FILENO);
-			}
-			close(pipex->in_fd);
-			close(pipex->out_fd);
-			close(pipefd[0][1]);
-			close(pipefd[0][0]);
-			close(pipefd[1][1]);
-			close(pipefd[1][0]);
-			find_and_exec(pipex, cmds_i);
-			exit(127); //エラーで終了
-		}
+			return (close_dup_exec(pipex, pipefd, cmds_i));
+		close_at_parent(pipefd, cmds_i);
 		cmds_i++;
 	}
-	close(pipefd[0][1]);
-	close(pipefd[0][0]);
-	close(pipefd[1][1]);
-	close(pipefd[1][0]);
-	close(pipex->in_fd);
-	close(pipex->out_fd);
-	while (1)
-	{
-		if (wait(NULL) < 0)
-			break ;
-	}
-	// exec_retvalの値によっては、エラーを出力する必要がある。
-	return (1);
+	free_pipes(pipex, pipefd);
+	while (wait(NULL) > 0)
+		;
+	return (0);
 }

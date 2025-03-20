@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:37:45 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/19 18:16:29 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/20 16:36:47 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,15 @@ char		***get_cmds(int ac, char *av[], t_pipex *pipex);
 
 // exec
 
-int			execute_cmds(int ac, char *av[], t_pipex *pipex);
+int			execute_cmds(t_pipex *pipex);
+
+// cleanup
+
+void		free_pipes(t_pipex *pipex, int **pipefd);
+
+// handle_cmd
+
+void		close_and_dup_first(t_pipex *pipex, int **pipefd);
+void		close_and_dup_middle(t_pipex *pipex, int **pipefd, int cmds_i);
+void		close_and_dup_last(t_pipex *pipex, int **pipefd, int cmds_i);
 #endif
