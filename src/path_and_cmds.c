@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_and_args.c                                     :+:      :+:    :+:   */
+/*   path_and_cmds.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:08:50 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/19 10:41:11 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 14:08:18 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,7 @@ static char	**add_slash(char **split_path)
 	{
 		path_with_slash = ft_strjoin(split_path[path_i], "/");
 		if (path_with_slash == NULL)
-		{
-			printf("strjoin failed at get_paths\n");
 			return (NULL);
-		}
 		free(split_path[path_i]);
 		split_path[path_i] = path_with_slash;
 		path_i++;
@@ -51,16 +48,14 @@ char	**get_path(char **envp)
 	if (envp[path_row] == NULL)
 		return (NULL);
 	path = ft_substr(envp[path_row], 5, ft_strlen(envp[path_row]) - 5);
+	if (path == NULL)
+		return (NULL);
 	split_path = ft_split(path, ':');
 	free(path);
-	add_slash(split_path);
-	return (split_path);
+	if (split_path == NULL)
+		return (NULL);
+	return (add_slash(split_path));
 }
-
-// TODO
-// static void	free_mem(char ***cmds)
-// {
-// }
 
 char	***get_cmds(int ac, char *av[], t_pipex *pipex)
 {
@@ -81,8 +76,7 @@ char	***get_cmds(int ac, char *av[], t_pipex *pipex)
 		cmds[cmd_i] = ft_split(av[arg_i], ' ');
 		if (cmds[cmd_i] == NULL)
 		{
-			printf("split failed\n");
-			// free_mem(cmds);
+			free_3d(cmds);
 			return (NULL);
 		}
 		cmd_i++;

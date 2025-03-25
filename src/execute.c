@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/20 16:52:13 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:49:54 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,13 @@ static int	**allocate_pipes(t_pipex *pipex)
 
 	pipefd = (int **)malloc((pipex->cmd_count - 1) * sizeof(int *));
 	if (pipefd == NULL)
-	{
-		printf("malloc1 failed at allocate_pipes\n");
 		return (NULL);
-	}
 	pipe_count = 0;
 	while (pipe_count < pipex->cmd_count - 1)
 	{
 		pipefd[pipe_count] = (int *)malloc(2 * sizeof(int));
 		if (pipefd[pipe_count] == NULL)
 		{
-			printf("malloc2 failed at allocate_pipes\n");
 			while (pipe_count > 0)
 				free(pipefd[--pipe_count]);
 			free(pipefd);
@@ -55,11 +51,15 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 	{
 		pathname = ft_strjoin(pipex->cmd_paths[path_i],
 				pipex->cmd_args[cmds_i][0]);
+		if (pathname == NULL)
+		{
+			free(pathname);
+			return (0);
+		}
 		execve(pathname, pipex->cmd_args[cmds_i], NULL);
 		free(pathname);
 		path_i++;
 	}
-	printf("exec failed at find_and_exec\n");
 	return (127);
 }
 
