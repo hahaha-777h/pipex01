@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 20:00:48 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 20:14:45 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,24 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 {
 	int		path_i;
 	char	*pathname;
+	char	***cmds;
 
-	// putstr_fd("find_and_exec\n", STDERR_FILENO); // debug
-	if (pipex->cmd_args[cmds_i][0][0] == '/')
+	cmds = pipex->cmd_args;
+	if (cmds[cmds_i][0][0] == '/')
 	{
-		return (execve(pipex->cmd_args[cmds_i][0], pipex->cmd_args[cmds_i],
-				NULL));
+		return (execve(cmds[cmds_i][0], cmds[cmds_i], NULL));
 	}
 	path_i = 0;
 	if (pipex->cmd_paths == NULL)
 		return (127);
 	if (cmds_i == 0 && pipex->in_fd == -1)
-	{
-		// printf("koko\n");
 		return (0);
-	}
-	// putstr_fd("kokodayo-\n", STDERR_FILENO); // debug
 	while (pipex->cmd_paths[path_i])
 	{
-		pathname = ft_strjoin(pipex->cmd_paths[path_i],
-				pipex->cmd_args[cmds_i][0]);
+		pathname = ft_strjoin(pipex->cmd_paths[path_i], cmds[cmds_i][0]);
 		if (pathname == NULL)
 			return (0);
-		execve(pathname, pipex->cmd_args[cmds_i], NULL);
+		execve(pathname, cmds[cmds_i], NULL);
 		free(pathname);
 		path_i++;
 	}
@@ -107,10 +102,7 @@ int	execute_cmds(t_pipex *pipex)
 			pipe(pipefd[cmds_i]);
 		pid = fork();
 		if (pid < 0)
-		{
-			putstr_fd("11\n", 2);
 			return (11);
-		}
 		if (pid == 0)
 			return (close_dup_exec(pipex, pipefd, cmds_i));
 		close_at_parent(pipefd, cmds_i);

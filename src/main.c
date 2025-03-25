@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 19:55:02 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 20:13:22 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,16 @@ static void	handle_here_doc(int ac, char *av[], t_pipex *pipex)
 {
 	static char	*filename = "/tmp/temp_file_for_heredoc";
 	char		*line;
+	char		*cmd;
 
-	char *cmd_with_line_break ;
 	pipex->in_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (pipex->in_fd == -1)
 		return ;
 	line = get_next_line(STDIN_FILENO);
-	cmd_with_line_break = ft_strjoin(av[2], "\n");
-	if (cmd_with_line_break == NULL)
+	cmd = ft_strjoin(av[2], "\n");
+	if (cmd == NULL)
 		return ;
-	while (ft_strcmp(line, cmd_with_line_break))
+	while (ft_strcmp(line, cmd))
 	{
 		if (putstr_fd(line, pipex->in_fd) == -1)
 			return ;
