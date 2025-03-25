@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 15:12:39 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 19:55:02 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,8 @@ int	main(int ac, char *av[], char *envp[])
 
 	init_pipex(ac, &pipex);
 	validate_args_and_open_file(ac, av, &pipex);
-	if (pipex.out_fd == -1 || (pipex.here_doc && pipex.in_fd == -1))
-		return (1);
+	if (pipex.in_fd == -1)
+		putstr_fd("No such file or directory\n", STDERR_FILENO);
 	if (is_path(envp))
 	{
 		pipex.cmd_paths = get_path(envp);

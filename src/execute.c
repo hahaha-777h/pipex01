@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 15:12:12 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 20:00:48 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 	int		path_i;
 	char	*pathname;
 
+	// putstr_fd("find_and_exec\n", STDERR_FILENO); // debug
 	if (pipex->cmd_args[cmds_i][0][0] == '/')
 	{
 		return (execve(pipex->cmd_args[cmds_i][0], pipex->cmd_args[cmds_i],
@@ -49,15 +50,18 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 	path_i = 0;
 	if (pipex->cmd_paths == NULL)
 		return (127);
+	if (cmds_i == 0 && pipex->in_fd == -1)
+	{
+		// printf("koko\n");
+		return (0);
+	}
+	// putstr_fd("kokodayo-\n", STDERR_FILENO); // debug
 	while (pipex->cmd_paths[path_i])
 	{
 		pathname = ft_strjoin(pipex->cmd_paths[path_i],
 				pipex->cmd_args[cmds_i][0]);
 		if (pathname == NULL)
-		{
-			free(pathname);
 			return (0);
-		}
 		execve(pathname, pipex->cmd_args[cmds_i], NULL);
 		free(pathname);
 		path_i++;
@@ -73,7 +77,9 @@ static int	close_dup_exec(t_pipex *pipex, int **pipefd, int cmds_i)
 		close_and_dup_last(pipex, pipefd, cmds_i);
 	else
 		close_and_dup_middle(pipex, pipefd, cmds_i);
-	return (find_and_exec(pipex, cmds_i));
+	if (!(cmds_i == 0 && pipex->in_fd == -1))
+		return (find_and_exec(pipex, cmds_i));
+	return (0);
 }
 
 static void	close_at_parent(int **pipefd, int cmds_i)
@@ -101,7 +107,10 @@ int	execute_cmds(t_pipex *pipex)
 			pipe(pipefd[cmds_i]);
 		pid = fork();
 		if (pid < 0)
+		{
+			putstr_fd("11\n", 2);
 			return (11);
+		}
 		if (pid == 0)
 			return (close_dup_exec(pipex, pipefd, cmds_i));
 		close_at_parent(pipefd, cmds_i);
