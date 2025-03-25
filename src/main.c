@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 15:12:39 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 16:39:00 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 
 	1, Align error return values with Bash
 	2, Include the name of the command in "Command not found" error messages
-	3,
 
 */
 
@@ -24,22 +23,25 @@ static void	handle_here_doc(int ac, char *av[], t_pipex *pipex)
 {
 	static char	*filename = "/tmp/temp_file_for_heredoc";
 	char		*line;
+	char		*cmd;
 
-	char *cmd_with_line_break ;
-	pipex->in_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0777);
+	pipex->in_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
 	if (pipex->in_fd == -1)
 		return ;
 	line = get_next_line(STDIN_FILENO);
-	cmd_with_line_break = ft_strjoin(av[2], "\n");
-	if (cmd_with_line_break == NULL)
+	cmd = ft_strjoin(av[2], "\n");
+	if (cmd == NULL)
 		return ;
-	while (ft_strcmp(line, cmd_with_line_break))
+	while (ft_strcmp(line, cmd))
 	{
-		if (putstr_fd(line, pipex->in_fd) == -1)
+		// if (putstr_fd(line, pipex->in_fd) == -1)
+		if (write(pipex->in_fd, line, ft_strlen(line)) == -1)
 			return ;
 		line = get_next_line(STDIN_FILENO);
 	}
-	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	close(pipex->in_fd);
+	pipex->in_fd = open(filename, O_RDONLY);
+	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 }
 
 static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
@@ -55,9 +57,11 @@ static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
 		if (ac < 6)
 		{
 			pipex->is_valid_arg = false;
+			putstr_fd("Invalid args\n", 2);
 			return ;
 		}
 		pipex->here_doc = true;
+		pipex->cmd_count--;
 		handle_here_doc(ac, av, pipex);
 		return ;
 	}
@@ -86,7 +90,7 @@ int	main(int ac, char *av[], char *envp[])
 
 	init_pipex(ac, &pipex);
 	validate_args_and_open_file(ac, av, &pipex);
-	if (pipex.out_fd == -1 || (pipex.here_doc && pipex.in_fd == -1))
+	if (pipex.out_fd == -1 || pipex.in_fd == -1 || !pipex.is_valid_arg)
 		return (1);
 	if (is_path(envp))
 	{
