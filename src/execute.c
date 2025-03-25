@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 13:49:54 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:12:12 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 				NULL));
 	}
 	path_i = 0;
+	if (pipex->cmd_paths == NULL)
+		return (127);
 	while (pipex->cmd_paths[path_i])
 	{
 		pathname = ft_strjoin(pipex->cmd_paths[path_i],
@@ -71,8 +73,7 @@ static int	close_dup_exec(t_pipex *pipex, int **pipefd, int cmds_i)
 		close_and_dup_last(pipex, pipefd, cmds_i);
 	else
 		close_and_dup_middle(pipex, pipefd, cmds_i);
-	find_and_exec(pipex, cmds_i);
-	return (127);
+	return (find_and_exec(pipex, cmds_i));
 }
 
 static void	close_at_parent(int **pipefd, int cmds_i)

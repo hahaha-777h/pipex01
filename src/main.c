@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 14:14:49 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:12:39 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
 	if (ac < 5)
 	{
 		pipex->is_valid_arg = false;
+		putstr_fd("Invalid args\n", 2);
 		return ;
 	}
 	if (!ft_strcmp(av[1], "here_doc"))
@@ -97,7 +98,7 @@ int	main(int ac, char *av[], char *envp[])
 	if (pipex.cmd_args == NULL)
 		return (5);
 	execute_retval = execute_cmds(&pipex);
-	if (execute_retval > 0)
+	if (execute_retval != 0)
 	{
 		write(STDERR_FILENO, "Command not found\n", 18);
 		return (execute_retval);
