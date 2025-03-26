@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/26 14:02:59 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/26 14:13:04 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/26 15:14:52 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static size_t	next_word_len(char const *s, char c)
 	return (word_len);
 }
 
-static char	*copy_and_split(char const *s, char c, size_t word_len)
+static char	*copy_and_split(char const *s, size_t word_len)
 {
 	char	*token;
 	size_t	char_pos;
@@ -104,7 +104,7 @@ char	**ft_split(char const *s, char c)
 	while (pos < token_count)
 	{
 		word_len = next_word_len(s, c);
-		tokens[pos] = copy_and_split(s, c, word_len);
+		tokens[pos] = copy_and_split(s, word_len);
 		if (tokens[pos] == NULL)
 		{
 			free_2d(tokens);
