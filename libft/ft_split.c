@@ -6,127 +6,134 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/26 14:02:59 by hhikita           #+#    #+#             */
-/*   Updated: 2024/11/07 15:07:35 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/26 14:13:04 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	ft_word_count(char const *s, char c)
+static char	**malloc_tokens(char const *s, char c, size_t *token_count)
 {
-	size_t	count;
+	char	**tokens;
 
-	count = 0;
+	*token_count = 0;
+	while (*s == c)
+		s++;
+	if (*s == '\0')
+		return (NULL);
 	while (*s)
 	{
-		while (*s == c)
+		if (*s != c)
+			*token_count = *token_count + 1;
+		while (*s && (*s != c))
 			s++;
-		if (*s != c && *s)
-		{
-			count++;
+		while (*s && (*s == c))
 			s++;
-			while (*s != c && *s)
-				s++;
-		}
 	}
-	return (count);
-}
-
-static size_t	ft_word_len(char const *s, char c)
-{
-	size_t	len;
-
-	len = 0;
-	while (*s != c && *s)
-	{
-		len++;
-		s++;
-	}
-	return (len);
-}
-
-static char	*ft_strdup_v2(const char *s, char c)
-{
-	char	*tmp;
-	size_t	len;
-	char	*ans;
-
-	len = ft_word_len(s, c);
-	tmp = malloc((len + 1) * sizeof(char));
-	if (!tmp)
+	tokens = malloc((*token_count + 1) * sizeof(char *));
+	if (tokens == NULL)
 		return (NULL);
-	ans = tmp;
+	tokens[*token_count] = NULL;
+	return (tokens);
+}
+
+static void	free_2d(char **arr)
+{
+	size_t	row_i;
+
+	if (arr == NULL)
+		return ;
+	row_i = 0;
+	while (arr[row_i])
+	{
+		free(arr[row_i]);
+		row_i++;
+	}
+	free(arr);
+}
+
+static size_t	next_word_len(char const *s, char c)
+{
+	size_t	word_len;
+
+	word_len = 0;
+	if (!s || !*s)
+		return (-1);
+	while (*s && *s == c)
+		s++;
 	while (*s && *s != c)
 	{
-		*tmp = *s;
-		tmp++;
 		s++;
+		word_len++;
 	}
-	*tmp = '\0';
-	return (ans);
+	return (word_len);
 }
 
-static void	ft_free_mem(char **a, size_t i)
+static char	*copy_and_split(char const *s, char c, size_t word_len)
 {
-	size_t	j;
+	char	*token;
+	size_t	char_pos;
 
-	j = 0;
-	while (j < i)
+	token = malloc((word_len + 1) * sizeof(char));
+	if (token == NULL)
 	{
-		free(a[j]);
-		j++;
+		free(token);
+		return (NULL);
 	}
-	free(a);
+	token[word_len] = '\0';
+	char_pos = 0;
+	while (char_pos < word_len)
+	{
+		token[char_pos] = s[char_pos];
+		char_pos++;
+	}
+	return (token);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	char	**a;
-	size_t	word_cnt;
-	size_t	i;
+	char	**tokens;
+	size_t	token_count;
+	size_t	pos;
+	size_t	word_len;
 
-	word_cnt = ft_word_count(s, c);
-	a = malloc((word_cnt + 1) * sizeof(char *));
-	if (!a)
+	tokens = malloc_tokens(s, c, &token_count);
+	if (tokens == NULL)
 		return (NULL);
-	a[word_cnt] = NULL;
-	i = 0;
-	while (i < word_cnt)
+	pos = 0;
+	while (pos < token_count)
 	{
-		while (*s == c)
-			s++;
-		a[i] = ft_strdup_v2(s, c);
-		if (!a[i])
+		word_len = next_word_len(s, c);
+		tokens[pos] = copy_and_split(s, c, word_len);
+		if (tokens[pos] == NULL)
 		{
-			ft_free_mem(a, i);
+			free_2d(tokens);
 			return (NULL);
 		}
-		s += ft_word_len(s, c);
-		i++;
+		s += word_len;
+		while (*s && *s == c)
+			s++;
+		pos++;
 	}
-	return (a);
+	return (tokens);
 }
 
-// #include <stdio.h>
-
-// int	main(void)
+// int	main(int ac, char **av)
 // {
-// 	char	a[] = "   111 222 333   ";
-// 	size_t	i;
-// 	char	**ans;
+// 	int row;
 
-// 	ans = ft_split(a, ' ');
-// 	if (!ans)
+// 	(void)ac;
+// 	char **arr;
+// 	arr = ft_split(av[1], av[2][0]);
+// 	if (arr == NULL)
 // 		return (1);
-// 	for (i = 0; ans[i]; i++)
+// 	if (*arr == NULL)
+// 		return (2);
+// 	row = 0;
+// 	while (arr[row])
 // 	{
-// 		printf("%s\n", ans[i]);
-// 		free(ans[i]); // 各単語のメモリを解放
+// 		printf("row:%d, %s\n", row, arr[row]);
+// 		row++;
 // 	}
-// 	free(ans); // 配列のメモリを解放
-// 	i = ft_word_count(a, ' ');
-// 	printf("wordcount: %zu\n", i);
 // 	return (0);
-// 	while (1)
-// 		;
 // }

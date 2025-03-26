@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 20:14:45 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/26 15:09:07 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 
 static int	close_dup_exec(t_pipex *pipex, int **pipefd, int cmds_i)
 {
+	int	exec_retval;
+
 	if (cmds_i == 0)
 		close_and_dup_first(pipex, pipefd);
 	else if (cmds_i == pipex->cmd_count - 1)
@@ -73,7 +75,12 @@ static int	close_dup_exec(t_pipex *pipex, int **pipefd, int cmds_i)
 	else
 		close_and_dup_middle(pipex, pipefd, cmds_i);
 	if (!(cmds_i == 0 && pipex->in_fd == -1))
-		return (find_and_exec(pipex, cmds_i));
+	{
+		exec_retval = find_and_exec(pipex, cmds_i);
+		if (exec_retval != 0)
+			putstr_fd("Command not found or Permission denied\n", 2);
+		return (exec_retval);
+	}
 	return (0);
 }
 
