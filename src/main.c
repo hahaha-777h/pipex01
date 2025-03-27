@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:36:34 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/26 15:09:03 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:47:01 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ static void	handle_here_doc(int ac, char *av[], t_pipex *pipex)
 	char		*line;
 	char		*cmd;
 
-	pipex->in_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0777);
+	pipex->here_doc = true;
+	pipex->cmd_count--;
+	pipex->in_fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (pipex->in_fd == -1)
 		return ;
 	line = get_next_line(STDIN_FILENO);
@@ -39,7 +41,9 @@ static void	handle_here_doc(int ac, char *av[], t_pipex *pipex)
 			return ;
 		line = get_next_line(STDIN_FILENO);
 	}
-	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	close(pipex->in_fd);
+	pipex->in_fd = open(filename, O_RDONLY);
+	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 }
 
 static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
@@ -57,7 +61,6 @@ static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
 			pipex->is_valid_arg = false;
 			return ;
 		}
-		pipex->here_doc = true;
 		handle_here_doc(ac, av, pipex);
 		return ;
 	}
@@ -65,7 +68,9 @@ static void	validate_args_and_open_file(int ac, char *av[], t_pipex *pipex)
 	pipex->out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (pipex->out_fd == -1)
 		putstr_fd("Permission denied\n", STDERR_FILENO);
-	if (pipex->in_fd == -1)
+	if (pipex->in_fd == -1 && errno == EACCES)
+		putstr_fd("Permission denied\n", STDERR_FILENO);
+	else if (pipex->in_fd == -1)
 		putstr_fd("No such file or directory\n", STDERR_FILENO);
 }
 
@@ -86,25 +91,25 @@ static bool	is_path(char **envp)
 static bool	validate_cmds(int ac, char **av, t_pipex *pipex)
 {
 	int	char_pos;
-	int	str_pos;
+	int	cmd_pos;
 
 	if (pipex->here_doc == true)
-		str_pos = 3;
+		cmd_pos = 3;
 	else
-		str_pos = 2;
-	while (av[str_pos] && str_pos < ac - 1)
+		cmd_pos = 2;
+	while (av[cmd_pos] && cmd_pos < ac - 1)
 	{
 		char_pos = 0;
-		while (av[str_pos][char_pos] == ' ')
+		while (av[cmd_pos][char_pos] == ' ')
 			char_pos++;
-		if (av[str_pos][char_pos] == '\0')
+		if (av[cmd_pos][char_pos] == '\0')
 		{
 			close(pipex->in_fd);
 			close(pipex->out_fd);
 			putstr_fd("Command not found\n", STDERR_FILENO);
 			return (false);
 		}
-		str_pos++;
+		cmd_pos++;
 	}
 	return (true);
 }
@@ -115,6 +120,8 @@ int	main(int ac, char *av[], char *envp[])
 
 	init_pipex(ac, &pipex);
 	validate_args_and_open_file(ac, av, &pipex);
+	if (pipex.here_doc == true && pipex.in_fd == -1)
+		return (4);
 	if (validate_cmds(ac, av, &pipex) == false)
 		return (5);
 	if (pipex.out_fd == -1)

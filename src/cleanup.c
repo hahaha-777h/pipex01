@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 09:54:19 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 13:45:58 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/27 12:02:53 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	free_3d(char ***arr3d)
 {
 	size_t	arr_i;
 
+	if (arr3d == NULL)
+		return ;
 	arr_i = 0;
 	while (arr3d[arr_i])
 	{

@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 12:57:40 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/26 15:09:07 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:46:11 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,7 @@ static int	find_and_exec(t_pipex *pipex, int cmds_i)
 
 	cmds = pipex->cmd_args;
 	if (cmds[cmds_i][0][0] == '/')
-	{
 		return (execve(cmds[cmds_i][0], cmds[cmds_i], NULL));
-	}
 	path_i = 0;
 	if (pipex->cmd_paths == NULL)
 		return (127);
