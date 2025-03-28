@@ -6,7 +6,7 @@
 /*   By: hhikita <hhikita@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:37:45 by hhikita           #+#    #+#             */
-/*   Updated: 2025/03/25 14:10:53 by hhikita          ###   ########.fr       */
+/*   Updated: 2025/03/28 14:09:06 by hhikita          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,9 @@ void		free_3d(char ***arr3d);
 void		close_and_dup_first(t_pipex *pipex, int **pipefd);
 void		close_and_dup_middle(t_pipex *pipex, int **pipefd, int cmds_i);
 void		close_and_dup_last(t_pipex *pipex, int **pipefd, int cmds_i);
+
+// here_doc
+
+void		handle_here_doc(int ac, char *av[], t_pipex *pipex);
 
 #endif
